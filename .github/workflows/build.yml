@@ -1,0 +1,61 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure Windows Driver Kit components
+        run: |
+          $installPath = 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise'
+          $vsInstaller = 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe'
+          $arguments = @(
+            'modify',
+            '--installPath',
+            $installPath,
+            '--passive',
+            '--norestart',
+            '--add',
+            'Microsoft.VisualStudio.Component.WindowsDriverKit'
+          )
+          & $vsInstaller @arguments
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "vs_installer exited with code $LASTEXITCODE"
+            exit $LASTEXITCODE
+          }
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Release bundle
+        run: |
+          msbuild .\wintun.proj -target:Driver;Zip -property:Configuration=Release -maxcpucount
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wintun-release
+          if-no-files-found: error
+          path: |
+            Release\**\wintun.dll
+            Release\**\wintun.sys
+            Release\**\wintun.inf
+            Release\**\wintun.cat
+            dist\*.zip
