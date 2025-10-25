@@ -40,8 +40,8 @@ jobs:
           }
 
           $ewdkRoot = "$driveLetter:\"
-          $env:PATH = "$ewdkRoot\BuildEnv\`$(_arch$)\`$(_platform$);$env:PATH"
-          & "$ewdkRoot\LaunchBuildEnv.cmd" x64 cmd /c "msbuild wintun.proj -target:Driver;Zip -property:Configuration=Release -property:WindowsTargetPlatformVersion=10.0.19041.0 -maxcpucount"
+          $workspace = $env:GITHUB_WORKSPACE
+          & "$ewdkRoot\LaunchBuildEnv.cmd" x64 cmd /c "cd /d `"$workspace`" && msbuild wintun.proj -target:Driver;Zip -property:Configuration=Release -property:WindowsTargetPlatformVersion=10.0.19041.0 -maxcpucount"
           if ($LASTEXITCODE -ne 0) {
             Write-Error "EWDK build failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
