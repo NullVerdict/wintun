@@ -137,8 +137,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableEnhancedInstructionSet Condition="'$(Platform)'=='x64'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalOptions Condition="'$(Platform)'=='x64'">/favor:INTEL64 %(AdditionalOptions)</AdditionalOptions>
+      <EnableEnhancedInstructionSet Condition="'$(Platform)'=='x64' and '$(ConfigurationType)'!='Driver'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalOptions Condition="'$(Platform)'=='x64' and '$(ConfigurationType)'!='Driver'">/favor:INTEL64 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
