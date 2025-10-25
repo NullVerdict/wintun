@@ -28,7 +28,7 @@ jobs:
           $ProgressPreference = 'SilentlyContinue'
           $wdkInstaller = Join-Path $env:TEMP 'wdksetup.exe'
           Invoke-WebRequest -Uri 'https://download.microsoft.com/download/c/f/8/cf80b955-d578-4635-825c-2801911f9d79/wdk/wdksetup.exe' -OutFile $wdkInstaller
-          cmd /c start /wait "" `"$wdkInstaller`" /features + /quiet /norestart
+          cmd /c start /wait "" `"$wdkInstaller`" /quiet /norestart
           if (-not (Test-Path 'C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\km\ntifs.h')) {
             Write-Error 'WDK installation failed: ntifs.h not found'
             exit 1
