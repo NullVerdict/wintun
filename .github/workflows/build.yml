@@ -2,61 +2,64 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: ["**"]
   pull_request:
-
-permissions:
-  contents: read
-
-defaults:
-  run:
-    shell: pwsh
+  workflow_dispatch:
 
 jobs:
   build:
+    name: ${{ matrix.configuration }} | ${{ matrix.platform }}
     runs-on: windows-2022
-
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+        platform: [amd64, x86, arm64, arm]
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Download Enterprise WDK 19041 ISO
-        run: |
-          $ProgressPreference = 'SilentlyContinue'
-          $ewdkIso = Join-Path $env:RUNNER_TEMP 'ewdk.iso'
-          Invoke-WebRequest -Uri 'https://download.microsoft.com/download/8/1/c/81c5e1a2-045e-4263-a75d-680c8bca833b/EnterpriseWDK_rs2_release_15063.iso' -OutFile $ewdkIso
-          Write-Output "EWDK ISO downloaded to $ewdkIso"
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
 
-      - name: Mount EWDK and build
-        run: |
-          $ewdkIso = Join-Path $env:RUNNER_TEMP 'ewdk.iso'
-          $mountResult = Mount-DiskImage -ImagePath $ewdkIso -PassThru
-          $driveLetter = ($mountResult | Get-Volume).DriveLetter
-          if (-not $driveLetter) {
-            Write-Error 'Failed to mount EWDK ISO'
-            exit 1
-          }
+      - name: Set up MSVC env (amd64)
+        if: matrix.platform == 'amd64'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
-          $ewdkRoot = "$driveLetter:\"
-          $workspace = $env:GITHUB_WORKSPACE
-          & "$ewdkRoot\LaunchBuildEnv.cmd" x64 cmd /c "cd /d `"$workspace`" && msbuild wintun.proj -target:Driver;Zip -property:Configuration=Release -property:WindowsTargetPlatformVersion=10.0.19041.0 -maxcpucount"
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "EWDK build failed with exit code $LASTEXITCODE"
-            exit $LASTEXITCODE
-          }
+      - name: Set up MSVC env (x86)
+        if: matrix.platform == 'x86'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
 
-          Dismount-DiskImage -ImagePath $ewdkIso
+      - name: Set up MSVC env (arm64)
+        if: matrix.platform == 'arm64'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64_arm64
 
-      - name: Upload artifacts
+      - name: Set up MSVC env (arm)
+        if: matrix.platform == 'arm'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64_arm
+
+      - name: Build solution
+        shell: pwsh
+        run: >
+          msbuild .\wintun.sln -m
+          -p:Configuration=${{ matrix.configuration }}
+          -p:Platform=${{ matrix.platform }}
+
+      - name: Upload build artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wintun-release
-          if-no-files-found: error
+          name: wintun-${{ matrix.configuration }}-${{ matrix.platform }}
           path: |
-            Release\**\wintun.dll
-            Release\**\wintun.sys
-            Release\**\wintun.inf
-            Release\**\wintun.cat
-            dist\*.zip
+            ${{ matrix.configuration }}/**
+          retention-days: 7
