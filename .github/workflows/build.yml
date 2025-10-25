@@ -16,23 +16,22 @@ defaults:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Windows SDK and WDK
+      - name: Install Windows SDK and WDK 19041
         run: |
-          winget install --id Microsoft.WindowsSDK.10.0.26100 --source winget --accept-package-agreements --accept-source-agreements
-          winget install --id Microsoft.WindowsWDK.10.0.26100 --source winget --accept-package-agreements --accept-source-agreements
+          winget install --id Microsoft.WindowsWDK.10.0.19041 --source winget --accept-package-agreements --accept-source-agreements
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
       - name: Build Release bundle
         run: |
-          msbuild .\wintun.proj -target:"Driver;Zip" -property:Configuration=Release -maxcpucount
+          msbuild .\wintun.proj -target:"Driver;Zip" -property:Configuration=Release -property:WindowsTargetPlatformVersion=10.0.19041.0 -maxcpucount
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
