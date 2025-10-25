@@ -56,24 +56,24 @@
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'" Label="Configuration">
-    <TargetVersion>Windows11</TargetVersion>
-    <_NT_TARGET_VERSION>0x0A00001A</_NT_TARGET_VERSION>
-    <NTDDI_VERSION>0x0A00001A</NTDDI_VERSION>
+    <TargetVersion>Windows10</TargetVersion>
+    <_NT_TARGET_VERSION>0x0A00000C</_NT_TARGET_VERSION>
+    <NTDDI_VERSION>0x0A00000C</NTDDI_VERSION>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='ARM'" Label="Configuration">
-    <TargetVersion>Windows11</TargetVersion>
-    <_NT_TARGET_VERSION>0x0A00001A</_NT_TARGET_VERSION>
-    <NTDDI_VERSION>0x0A00001A</NTDDI_VERSION>
+    <TargetVersion>Windows10</TargetVersion>
+    <_NT_TARGET_VERSION>0x0A00000C</_NT_TARGET_VERSION>
+    <NTDDI_VERSION>0x0A00000C</NTDDI_VERSION>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'" Label="Configuration">
-    <TargetVersion>Windows11</TargetVersion>
-    <_NT_TARGET_VERSION>0x0A00001A</_NT_TARGET_VERSION>
-    <NTDDI_VERSION>0x0A00001A</NTDDI_VERSION>
+    <TargetVersion>Windows10</TargetVersion>
+    <_NT_TARGET_VERSION>0x0A00000C</_NT_TARGET_VERSION>
+    <NTDDI_VERSION>0x0A00000C</NTDDI_VERSION>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='ARM64'" Label="Configuration">
-    <TargetVersion>Windows11</TargetVersion>
-    <_NT_TARGET_VERSION>0x0A00001A</_NT_TARGET_VERSION>
-    <NTDDI_VERSION>0x0A00001A</NTDDI_VERSION>
+    <TargetVersion>Windows10</TargetVersion>
+    <_NT_TARGET_VERSION>0x0A00000C</_NT_TARGET_VERSION>
+    <NTDDI_VERSION>0x0A00000C</NTDDI_VERSION>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ForcedTargetVersion)'!=''">
     <TargetVersion>$(ForcedTargetVersion)</TargetVersion>
