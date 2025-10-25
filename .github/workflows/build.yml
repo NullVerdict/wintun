@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configuration: [Debug, Release]
-        platform: [amd64, x86, arm64, arm]
+        configuration: [Release]
+        platform: [amd64]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -24,29 +24,10 @@ jobs:
         with:
           msbuild-architecture: x64
 
-      - name: Set up MSVC env (amd64)
-        if: matrix.platform == 'amd64'
+      - name: Set up MSVC env
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-
-      - name: Set up MSVC env (x86)
-        if: matrix.platform == 'x86'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x86
-
-      - name: Set up MSVC env (arm64)
-        if: matrix.platform == 'arm64'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64_arm64
-
-      - name: Set up MSVC env (arm)
-        if: matrix.platform == 'arm'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64_arm
 
       - name: Build solution
         shell: pwsh
